@@ -18,6 +18,11 @@ rand = "0.7"
 curve25519-dalek = { version = "3", features = ["serde"] }
 serde = { version = "1.0", features=["derive"] }
 hex = "^0.3"
+sha2 = "0.10"
+
+[[bin]]
+name = "test_examples"
+path = "test_examples.rs"
 
 [features]
 default = []
