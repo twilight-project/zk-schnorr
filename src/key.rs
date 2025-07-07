@@ -1,6 +1,7 @@
 use curve25519_dalek::constants::RISTRETTO_BASEPOINT_POINT;
 use curve25519_dalek::ristretto::{CompressedRistretto, RistrettoPoint};
 use curve25519_dalek::scalar::Scalar;
+use super::errors::ZkSchnorrError;
 //use serde::{Deserialize, Serialize};
 
 /// Signing key (aka "privkey") is a type alias for the scalar in Ristretto255 group.
@@ -56,6 +57,31 @@ impl VerificationKey {
         let mut bytes: Vec<u8> = Vec::with_capacity(64);
         bytes.extend_from_slice(self.g.as_bytes());
         bytes.extend_from_slice(self.h.as_bytes());
+        bytes
+    }
+
+    /// Creates a VerificationKey from a 64-byte slice
+    pub fn from_bytes(bytes: &[u8]) -> Result<Self, ZkSchnorrError> {
+        if bytes.len() != 64 {
+            return Err(ZkSchnorrError::InvalidSignature);
+        }
+        
+        let mut g_bytes = [0u8; 32];
+        let mut h_bytes = [0u8; 32];
+        g_bytes.copy_from_slice(&bytes[0..32]);
+        h_bytes.copy_from_slice(&bytes[32..64]);
+        
+        Ok(VerificationKey {
+            g: CompressedRistretto(g_bytes),
+            h: CompressedRistretto(h_bytes),
+        })
+    }
+
+    /// Returns the byte representation of the verification key as a fixed-size array
+    pub fn to_bytes_array(&self) -> [u8; 64] {
+        let mut bytes = [0u8; 64];
+        bytes[0..32].copy_from_slice(self.g.as_bytes());
+        bytes[32..64].copy_from_slice(self.h.as_bytes());
         bytes
     }
 }

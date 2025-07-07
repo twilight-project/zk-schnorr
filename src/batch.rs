@@ -48,25 +48,28 @@ impl BatchVerification for SingleVerifier {
         I::Item: Borrow<Scalar>,
         J: IntoIterator<Item = Option<RistrettoPoint>>,
     {
-        self.result = RistrettoPoint::optional_multiscalar_mul(
-            iter::once(basepoint_scalar).chain(dynamic_scalars),
-            dynamic_points,
-        )
-        .ok_or(ZkSchnorrError::InvalidSignature)
-        .and_then(|result| {
-            if result.is_identity() {
-                Ok(())
-            } else {
-                Err(ZkSchnorrError::InvalidSignature)
-            }
-        })
+        // Collect all scalars (basepoint_scalar + dynamic_scalars) and points
+        let scalars = iter::once(basepoint_scalar)
+            .chain(dynamic_scalars)
+            .map(|s| *s.borrow())
+            .collect::<Vec<_>>();
+        let points = dynamic_points.into_iter().collect::<Vec<_>>();
+        
+        self.result = RistrettoPoint::optional_multiscalar_mul(scalars, points)
+            .ok_or(ZkSchnorrError::InvalidSignature)
+            .and_then(|result| {
+                if result.is_identity() {
+                    Ok(())
+                } else {
+                    Err(ZkSchnorrError::InvalidSignature)
+                }
+            })
     }
 }
 
 /// Batch signature verifier for use with `Signature::verify_batched`.
 pub struct BatchVerifier<R: RngCore + CryptoRng> {
     rng: R,
-    basepoint_scalar: Scalar,
     dyn_weights: Vec<Scalar>,
     dyn_points: Vec<Option<RistrettoPoint>>,
 }
@@ -82,16 +85,20 @@ impl<R: RngCore + CryptoRng> BatchVerifier<R> {
     pub fn with_capacity(rng: R, capacity: usize) -> Self {
         Self {
             rng,
-            basepoint_scalar: Scalar::zero(),
-            dyn_weights: Vec::with_capacity(capacity * 2),
-            dyn_points: Vec::with_capacity(capacity * 2),
+            dyn_weights: Vec::with_capacity(capacity * 3), // 3 scalars per signature
+            dyn_points: Vec::with_capacity(capacity * 3), // 3 points per signature
         }
     }
 
     /// Performs the verification and returns the result.
     pub fn verify(self) -> Result<(), ZkSchnorrError> {
+        // Handle empty batch case
+        if self.dyn_weights.is_empty() && self.dyn_points.is_empty() {
+            return Ok(());
+        }
+
         let result = RistrettoPoint::optional_multiscalar_mul(
-            iter::once(self.basepoint_scalar).chain(self.dyn_weights.into_iter()),
+            self.dyn_weights.into_iter(),
             self.dyn_points.into_iter(),
         )
         .ok_or(ZkSchnorrError::InvalidBatch)?;
@@ -114,9 +121,15 @@ impl<R: RngCore + CryptoRng> BatchVerification for BatchVerifier<R> {
         // individual operations are unlikely (p < 2^-252) to cancel each other,
         // and therefore each operation must produce an identity point.
         let r = Scalar::random(&mut self.rng);
-        self.basepoint_scalar += r * basepoint_scalar.borrow();
+        
+        // Add the basepoint scalar as the first dynamic scalar
+        self.dyn_weights.push(r * basepoint_scalar.borrow());
+        
+        // Add all other dynamic scalars
         self.dyn_weights
             .extend(dynamic_scalars.into_iter().map(|f| r * f.borrow()));
+        
+        // Add all dynamic points (including the "basepoint" as first point)
         self.dyn_points.extend(dynamic_points);
     }
 }
