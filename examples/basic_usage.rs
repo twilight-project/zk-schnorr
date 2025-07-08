@@ -32,7 +32,7 @@ fn main() -> Result<(), ZkSchnorrError> {
     match signature.verify_message(b"example", message, verification_key) {
         Ok(()) => println!("✓ Signature verification successful"),
         Err(e) => {
-            println!("✗ Signature verification failed: {:?}", e);
+            println!("✗ Signature verification failed: {e:?}");
             return Err(e);
         }
     }
@@ -49,7 +49,7 @@ fn main() -> Result<(), ZkSchnorrError> {
     match recovered_sig.verify_message(b"example", message, recovered_key) {
         Ok(()) => println!("✓ Serialization round-trip successful"),
         Err(e) => {
-            println!("✗ Serialization round-trip failed: {:?}", e);
+            println!("✗ Serialization round-trip failed: {e:?}");
             return Err(e);
         }
     }
@@ -60,8 +60,7 @@ fn main() -> Result<(), ZkSchnorrError> {
     let batch_size = 5;
 
     println!(
-        "   Creating {} signatures for batch verification...",
-        batch_size
+        "   Creating {batch_size} signatures for batch verification..."
     );
     let mut signatures = Vec::new();
     let mut keys = Vec::new();
@@ -72,7 +71,7 @@ fn main() -> Result<(), ZkSchnorrError> {
         let r = Scalar::random(&mut thread_rng());
         let vk = VerificationKey::from_secret(&sk, &r);
 
-        let msg = format!("Batch message {}", i);
+        let msg = format!("Batch message {i}");
         let sig = Signature::sign_message(b"batch", msg.as_bytes(), vk, sk);
 
         signatures.push(sig);
@@ -98,7 +97,7 @@ fn main() -> Result<(), ZkSchnorrError> {
     match batch.verify() {
         Ok(()) => println!("✓ Batch verification successful"),
         Err(e) => {
-            println!("✗ Batch verification failed: {:?}", e);
+            println!("✗ Batch verification failed: {e:?}");
             return Err(e);
         }
     }
@@ -124,8 +123,8 @@ fn main() -> Result<(), ZkSchnorrError> {
     batch.verify()?;
     let batch_time = start.elapsed();
 
-    println!("   Individual verification: {:?}", individual_time);
-    println!("   Batch verification:      {:?}", batch_time);
+    println!("   Individual verification: {individual_time:?}");
+    println!("   Batch verification:      {batch_time:?}");
     println!(
         "   Speedup: {:.2}x",
         individual_time.as_secs_f64() / batch_time.as_secs_f64()
