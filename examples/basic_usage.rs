@@ -59,9 +59,7 @@ fn main() -> Result<(), ZkSchnorrError> {
     let mut batch = BatchVerifier::new(thread_rng());
     let batch_size = 5;
 
-    println!(
-        "   Creating {batch_size} signatures for batch verification..."
-    );
+    println!("   Creating {batch_size} signatures for batch verification...");
     let mut signatures = Vec::new();
     let mut keys = Vec::new();
     let mut messages = Vec::new();
