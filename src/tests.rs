@@ -218,7 +218,7 @@ fn large_batch_verification() {
         let r = Scalar::random(&mut rand::thread_rng());
         let pubkey = VerificationKey::from_secret(&privkey, &r);
 
-        let message = format!("message {}", i);
+        let message = format!("message {i}");
         let sig = Signature::sign_message(b"test", message.as_bytes(), pubkey, privkey);
 
         // Verify individually first
