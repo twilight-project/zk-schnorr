@@ -112,4 +112,3 @@ pub use self::errors::ZkSchnorrError;
 pub use self::key::{SigningKey, VerificationKey};
 pub use self::signature::Signature;
 pub use self::transcript::TranscriptProtocol;
-

@@ -2,8 +2,8 @@ use curve25519_dalek::ristretto::CompressedRistretto;
 use curve25519_dalek::scalar::Scalar;
 use serde::{de::Deserializer, de::Visitor, ser::Serializer, Deserialize, Serialize};
 
-use super::ZkSchnorrError;
 use super::Signature;
+use super::ZkSchnorrError;
 
 impl Signature {
     /// Decodes a signature from a 64-byte slice.
@@ -43,7 +43,7 @@ impl AsRefExt for [u8] {
     }
 }
 
-impl<'a> AsRefExt for &'a [u8] {
+impl AsRefExt for &[u8] {
     fn as_ref_ext(&self) -> &[u8] {
         self
     }

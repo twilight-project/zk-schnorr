@@ -10,6 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.0] - 2025-07-08
 
+### Known Issues
+- **RUSTSEC-2024-0344**: Uses curve25519-dalek v3.2.1 with timing vulnerability
+  - Will be resolved in v0.2.0 by upgrading to curve25519-dalek v4.1.3+
+  - Maintained for ecosystem compatibility in v0.1.x series
+
+### Security
+- **⚠️ SECURITY WARNING**: This library has not been formally audited
+- Known timing vulnerability in curve25519-dalek dependency (see Known Issues)
+
 - Initial public release of the zkSchnorr multipoint signature library
 - Core signature operations:
   - `Signature::sign()` - Transcript-based signing
@@ -68,8 +77,7 @@ While the implementation follows established cryptographic practices and has bee
 For production use, we recommend:
 1. Independent security review of the code
 2. Formal cryptographic audit by qualified professionals
-3. Extensive testing in your specific use case
-4. Following standard security practices for key management
+
 
 ## Contributing
 

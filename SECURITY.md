@@ -34,7 +34,14 @@ We follow a four-level severity model:
 
 ## Security Warning
 
-**⚠️ This cryptographic library has not undergone formal security auditing.**
+**⚠️ SECURITY WARNING**
+
+**This library has not been formally audited and is not recommended for production use.**
+
+**Known Issues:**
+- Uses curve25519-dalek v3.2.1 which has a timing vulnerability (RUSTSEC-2024-0344)
+- This will be resolved in v0.2.0 by upgrading to curve25519-dalek v4.1.3+
+- Current version maintained for ecosystem compatibility
 
 This library is intended for experimental and testnet use only. It has not been reviewed by independent security experts and should not be used in production environments where security is critical.
 

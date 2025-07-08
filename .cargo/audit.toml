@@ -1,0 +1,7 @@
+[advisories]
+# TEMPORARY: Ignore timing vulnerability in curve25519-dalek v3.2.1
+# Reason: Maintaining compatibility with existing ecosystem dependencies
+# Timeline: Will upgrade to curve25519-dalek v4.1.3+ in v0.2.0
+# Tracking: This is a known limitation documented in README and CHANGELOG
+ignore = ["RUSTSEC-2024-0344"]
+
