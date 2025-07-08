@@ -54,7 +54,7 @@ impl BatchVerification for SingleVerifier {
             .map(|s| *s.borrow())
             .collect::<Vec<_>>();
         let points = dynamic_points.into_iter().collect::<Vec<_>>();
-        
+
         self.result = RistrettoPoint::optional_multiscalar_mul(scalars, points)
             .ok_or(ZkSchnorrError::InvalidSignature)
             .and_then(|result| {
@@ -86,7 +86,7 @@ impl<R: RngCore + CryptoRng> BatchVerifier<R> {
         Self {
             rng,
             dyn_weights: Vec::with_capacity(capacity * 3), // 3 scalars per signature
-            dyn_points: Vec::with_capacity(capacity * 3), // 3 points per signature
+            dyn_points: Vec::with_capacity(capacity * 3),  // 3 points per signature
         }
     }
 
@@ -121,14 +121,14 @@ impl<R: RngCore + CryptoRng> BatchVerification for BatchVerifier<R> {
         // individual operations are unlikely (p < 2^-252) to cancel each other,
         // and therefore each operation must produce an identity point.
         let r = Scalar::random(&mut self.rng);
-        
+
         // Add the basepoint scalar as the first dynamic scalar
         self.dyn_weights.push(r * basepoint_scalar.borrow());
-        
+
         // Add all other dynamic scalars
         self.dyn_weights
             .extend(dynamic_scalars.into_iter().map(|f| r * f.borrow()));
-        
+
         // Add all dynamic points (including the "basepoint" as first point)
         self.dyn_points.extend(dynamic_points);
     }

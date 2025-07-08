@@ -29,7 +29,7 @@ hex = "^0.3"
 
 [features]
 default = []
-nightly = ["curve25519-dalek/nightly", "curve25519-dalek/alloc"]
+#nightly = ["curve25519-dalek/nightly", "curve25519-dalek/alloc"]
 
 [dev-dependencies]
 # Add if you need additional test dependencies

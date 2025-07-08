@@ -33,7 +33,7 @@ impl Signature {
         // Generate ephemeral keypair (r, R). r is a random nonce.
         let r = Scalar::random(&mut rng);
         // R = generator * r
-        let R = (&pubkey.g.decompress().unwrap() * &r).compress();
+        let R = (pubkey.g.decompress().unwrap() * r).compress();
 
         let c = {
             transcript.zkschnorr_domain_sep();
@@ -48,7 +48,6 @@ impl Signature {
         Signature { s, R }
     }
 
-    
     /// Verifies the signature over a transcript using the provided verification key.
     /// Transcript should be in the same state as it was during the `sign` call
     /// that created the signature.
@@ -137,8 +136,8 @@ impl fmt::Debug for Signature {
         write!(
             f,
             "Signature({}{})",
-            hex::encode(&self.s.as_bytes()),
-            hex::encode(&self.R.as_bytes())
+            hex::encode(self.s.as_bytes()),
+            hex::encode(self.R.as_bytes())
         )
     }
 }
