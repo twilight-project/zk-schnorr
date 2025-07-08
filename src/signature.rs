@@ -33,7 +33,7 @@ impl Signature {
         // Generate ephemeral keypair (r, R). r is a random nonce.
         let r = Scalar::random(&mut rng);
         // R = generator * r
-        let R = (&pubkey.g.decompress().unwrap() * &r).compress();
+        let R = (pubkey.g.decompress().unwrap() * r).compress();
 
         let c = {
             transcript.zkschnorr_domain_sep();
@@ -48,7 +48,6 @@ impl Signature {
         Signature { s, R }
     }
 
-    
     /// Verifies the signature over a transcript using the provided verification key.
     /// Transcript should be in the same state as it was during the `sign` call
     /// that created the signature.
@@ -80,9 +79,9 @@ impl Signature {
         };
 
         // Form the final linear combination:
-        // `s * pk.g = R + c * pk.h`
-        //      ->
-        // `0 == (-s * pk.g) + (1 * R) + (c * pk.h)`
+        // The equation is: s * G = R + c * H
+        // Rearranged: 0 = -s * G + 1 * R + c * H
+        // Where G is pubkey.g, R is self.R, H is pubkey.h
         batch.append(
             -self.s,
             iter::once(Scalar::one()).chain(iter::once(c)),
@@ -97,7 +96,7 @@ impl Signature {
 impl Signature {
     /// Signs a message with a given domain-separation label.
     /// This is a simpler byte-oriented API over more flexible Transcript-based API.
-    /// Internally it creates a Transcript instance labelled "ElGamal.sign_message",
+    /// Internally it creates a Transcript instance labelled "zkschnorr.sign_message",
     /// and appends to it message bytes labelled with a user-provided `label`.
     pub fn sign_message(
         label: &'static [u8],
@@ -113,7 +112,7 @@ impl Signature {
     }
 
     /// Verifies the signature over a message using the provided verification key.
-    /// Internally it creates a Transcript instance labelled "Elgamal.sign_message",
+    /// Internally it creates a Transcript instance labelled "zkschnorr.sign_message",
     /// and appends to it message bytes labelled with a user-provided `label`.
     pub fn verify_message(
         &self,
@@ -125,7 +124,7 @@ impl Signature {
     }
 
     fn transcript_for_message(label: &'static [u8], message: &[u8]) -> Transcript {
-        let mut t = Transcript::new(b"Elgamal.sign_message");
+        let mut t = Transcript::new(b"zkschnorr.sign_message");
         t.append_message(label, message);
         t
     }
@@ -137,8 +136,8 @@ impl fmt::Debug for Signature {
         write!(
             f,
             "Signature({}{})",
-            hex::encode(&self.s.as_bytes()),
-            hex::encode(&self.R.as_bytes())
+            hex::encode(self.s.as_bytes()),
+            hex::encode(self.R.as_bytes())
         )
     }
 }

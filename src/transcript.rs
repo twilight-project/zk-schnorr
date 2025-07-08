@@ -17,7 +17,7 @@ pub trait TranscriptProtocol {
 
 impl TranscriptProtocol for Transcript {
     fn zkschnorr_domain_sep(&mut self) {
-        self.append_message(b"dom-sep", b"ElGamalSign v1");
+        self.append_message(b"dom-sep", b"zkschnorr v1");
     }
 
     fn append_scalar(&mut self, label: &'static [u8], scalar: &Scalar) {
