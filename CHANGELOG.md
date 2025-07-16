@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 - No pending changes.
 
+## [v0.1.1] - 2024-07-16
+
+### Changed
+- Updated the `hex` dependency from `0.3.2` to `0.4.3` to resolve dependency duplication issues in downstream crates. This has no impact on the public API.
+
 ## [0.1.0] - 2025-07-08
 
 ### Known Issues
