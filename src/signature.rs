@@ -84,7 +84,7 @@ impl Signature {
         // Where G is pubkey.g, R is self.R, H is pubkey.h
         batch.append(
             -self.s,
-            iter::once(Scalar::one()).chain(iter::once(c)),
+            iter::once(Scalar::ONE).chain(iter::once(c)),
             iter::once(pubkey.g.decompress())
                 .chain(iter::once(self.R.decompress()))
                 .chain(iter::once(pubkey.h.decompress())),
