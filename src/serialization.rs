@@ -1,13 +1,13 @@
+use super::Signature;
+use super::ZkSchnorrError;
 use curve25519_dalek::ristretto::CompressedRistretto;
 use curve25519_dalek::scalar::Scalar;
 use serde::{de::Deserializer, de::Visitor, ser::Serializer, Deserialize, Serialize};
-use super::Signature;
-use super::ZkSchnorrError;
 
 impl Signature {
     /// Decodes a signature from a 64-byte slice.
     pub fn from_bytes(sig: impl AsRefExt) -> Result<Self, ZkSchnorrError> {
-      let sig = sig.as_ref_ext();
+        let sig = sig.as_ref_ext();
         if sig.len() != 64 {
             return Err(ZkSchnorrError::InvalidSignature);
         }
@@ -15,28 +15,27 @@ impl Signature {
         let mut sbuf = [0u8; 32];
         rbuf[..].copy_from_slice(&sig[..32]);
         sbuf[..].copy_from_slice(&sig[32..]);
-        
+
         // Constant-time extraction
         let s_ct = Scalar::from_canonical_bytes(sbuf);
         // Extract scalar (using zero as dummy if invalid - constant time)
         let s = s_ct.unwrap_or(Scalar::ZERO);
-        
+
         // Check validity in constant time
         let is_valid = s_ct.is_some();
-        
+
         // Construct signature (works for both valid and invalid cases)
         let sig = Signature {
             R: CompressedRistretto(rbuf),
             s,
         };
-        
+
         // Return error only after constant-time work is done
         if bool::from(is_valid) {
             Ok(sig)
         } else {
             Err(ZkSchnorrError::InvalidSignature)
         }
-    
     }
 
     /// Encodes the signature as a 64-byte array.

@@ -8,6 +8,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 - No pending changes.
 
+## [v0.2.0] - 2026-01-03
+
+### Security
+- ✅ **FIXED**: Resolved RUSTSEC-2024-0344 timing vulnerability by upgrading curve25519-dalek from v3.2.1 to v4.1.3
+- ✅ All cryptographic operations now use constant-time implementations
+- ✅ Enhanced side-channel resistance in signature verification
+### Changed
+- **BREAKING**: Upgraded `curve25519-dalek` from v3 to v4.1.3
+  - Added `alloc` feature requirement for multiscalar multiplication
+  - Migrated from `optional_multiscalar_mul` to `multiscalar_mul` (removed in v4)
+- Updated `merlin` from v2 to v3
+- Updated `rand` from 0.7 to 0.8
+- Synced `rand_core` to 0.6 (resolves version conflicts)
+- Moved `hex` to regular dependencies (used in Debug formatting)
+
+### Fixed
+- Fixed batch verification to properly handle `Option<RistrettoPoint>` conversion
+- Resolved dependency version conflicts between merlin, rand, and curve25519-dalek
+- Fixed error handling in `SingleVerifier::append` for `None` point values
+
+### Technical Details
+- Batch verification now uses `multiscalar_mul` with proper `Option` handling
+- All multiscalar multiplication operations use constant-time implementations
+- Improved error messages for invalid point decompression
+
 ## [v0.1.1] - 2024-07-16
 
 ### Changed

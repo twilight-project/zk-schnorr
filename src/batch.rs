@@ -53,20 +53,21 @@ impl BatchVerification for SingleVerifier {
             .chain(dynamic_scalars)
             .map(|s| *s.borrow())
             .collect::<Vec<_>>();
-        
+
         // Collect points and check for None values
         let points = match dynamic_points.into_iter().collect::<Option<Vec<_>>>() {
             Some(points) => points,
-            None => { self.result= Err(ZkSchnorrError::InvalidSignature);
+            None => {
+                self.result = Err(ZkSchnorrError::InvalidSignature);
                 return;
             }
         };
 
-                // multiscalar_mul now returns RistrettoPoint directly (not Option)
-        let result = RistrettoPoint::multiscalar_mul(scalars.into_iter(), points.into_iter());
-        
+        // multiscalar_mul now returns RistrettoPoint directly (not Option)
+        let result = RistrettoPoint::multiscalar_mul(scalars, points);
+
         self.result = if result.is_identity() {
-         Ok(())
+            Ok(())
         } else {
             Err(ZkSchnorrError::InvalidSignature)
         };
@@ -103,19 +104,17 @@ impl<R: RngCore + CryptoRng> BatchVerifier<R> {
             return Ok(());
         }
         // Convert Option<RistrettoPoint> to RistrettoPoint, returning error if any are None
-        let points: Vec<RistrettoPoint> = self.dyn_points
-        .into_iter()
-        .collect::<Option<Vec<_>>>()
-        .ok_or(ZkSchnorrError::InvalidBatch)?;
-        
+        let points: Vec<RistrettoPoint> = self
+            .dyn_points
+            .into_iter()
+            .collect::<Option<Vec<_>>>()
+            .ok_or(ZkSchnorrError::InvalidBatch)?;
+
         // multiscalar_mul now returns RistrettoPoint directly (not Option)
-        let result = RistrettoPoint::multiscalar_mul(
-            self.dyn_weights.into_iter(),
-            points.into_iter(),
-        );
+        let result = RistrettoPoint::multiscalar_mul(self.dyn_weights, points);
 
         if result.is_identity() {
-        Ok(())
+            Ok(())
         } else {
             Err(ZkSchnorrError::InvalidBatch)
         }
