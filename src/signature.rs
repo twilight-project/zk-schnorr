@@ -1,6 +1,7 @@
 use curve25519_dalek::ristretto::CompressedRistretto;
 use curve25519_dalek::scalar::Scalar;
 use std::fmt;
+use hex;
 
 use super::batch::{BatchVerification, SingleVerifier};
 use super::errors::ZkSchnorrError;
@@ -84,7 +85,7 @@ impl Signature {
         // Where G is pubkey.g, R is self.R, H is pubkey.h
         batch.append(
             -self.s,
-            iter::once(Scalar::one()).chain(iter::once(c)),
+            iter::once(Scalar::ONE).chain(iter::once(c)),
             iter::once(pubkey.g.decompress())
                 .chain(iter::once(self.R.decompress()))
                 .chain(iter::once(pubkey.h.decompress())),
@@ -129,7 +130,6 @@ impl Signature {
         t
     }
 }
-
 impl fmt::Debug for Signature {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         // Without hex crate we'd do this, but it outputs comma-separated numbers: [aa, 11, 5a, ...]
