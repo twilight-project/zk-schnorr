@@ -1,7 +1,6 @@
 use curve25519_dalek::ristretto::CompressedRistretto;
 use curve25519_dalek::scalar::Scalar;
 use std::fmt;
-use hex;
 
 use super::batch::{BatchVerification, SingleVerifier};
 use super::errors::ZkSchnorrError;

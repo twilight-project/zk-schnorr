@@ -41,7 +41,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-zkschnorr = "0.1.0"
+zkschnorr = "0.2.0"
 ```
 
 ## Quick Start
