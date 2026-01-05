@@ -1,6 +1,7 @@
 use curve25519_dalek::ristretto::CompressedRistretto;
 use curve25519_dalek::scalar::Scalar;
 use std::fmt;
+use hex;
 
 use super::batch::{BatchVerification, SingleVerifier};
 use super::errors::ZkSchnorrError;
@@ -129,7 +130,6 @@ impl Signature {
         t
     }
 }
-
 impl fmt::Debug for Signature {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         // Without hex crate we'd do this, but it outputs comma-separated numbers: [aa, 11, 5a, ...]
